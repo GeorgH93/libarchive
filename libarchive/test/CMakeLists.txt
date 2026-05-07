@@ -11,10 +11,13 @@ IF(ENABLE_TEST)
     test.h
     test_7zip_filename_encoding.c
     test_acl_nfs4.c
+    test_acl_nfs4_null_id_overflow.c
+    test_acl_nfs4_text.c
     test_acl_pax.c
     test_acl_platform_nfs4.c
     test_acl_platform_posix1e.c
     test_acl_posix1e.c
+    test_acl_posix1e_text.c
     test_acl_text.c
     test_ar_mode.c
     test_archive_api_feature.c
@@ -108,6 +111,7 @@ IF(ENABLE_TEST)
     test_read_format_7zip_encryption_data.c
     test_read_format_7zip_encryption_header.c
     test_read_format_7zip_encryption_partially.c
+    test_read_format_7zip_entries_oom.c
     test_read_format_7zip_issue2765.c
     test_read_format_7zip_malformed.c
     test_read_format_7zip_packinfo_digests.c
@@ -115,6 +119,7 @@ IF(ENABLE_TEST)
     test_read_format_cab.c
     test_read_format_cab_filename.c
     test_read_format_cab_lzx_oob.c
+    test_read_format_cab_mszip_oob.c
     test_read_format_cab_skip_malformed.c
     test_read_format_cpio_afio.c
     test_read_format_cpio_bin.c
@@ -142,6 +147,7 @@ IF(ENABLE_TEST)
     test_read_format_gtar_sparse_skip_entry.c
     test_read_format_huge_rpm.c
     test_read_format_iso_Z.c
+    test_read_format_iso_joliet_utf16be_overflow.c
     test_read_format_iso_multi_extent.c
     test_read_format_iso_xorriso.c
     test_read_format_isojoliet_bz2.c
@@ -171,6 +177,7 @@ IF(ENABLE_TEST)
     test_read_format_rar_filter.c
     test_read_format_rar_overflow.c
     test_read_format_rar5.c
+    test_read_format_rar5_bad_tables.c
     test_read_format_rar5_loop_bug.c
     test_read_format_raw.c
     test_read_format_tar.c
@@ -185,6 +192,8 @@ IF(ENABLE_TEST)
     test_read_format_tar_pax_g_large.c
     test_read_format_tar_pax_large_attr.c
     test_read_format_tar_pax_negative_time.c
+    test_read_format_tar_pax_timestamps.c
+    test_read_format_tar_timestamp_overflow.c
     test_read_format_tbz.c
     test_read_format_tgz.c
     test_read_format_tlz.c
@@ -216,6 +225,7 @@ IF(ENABLE_TEST)
     test_read_format_zip_winzip_aes_large.c
     test_read_format_zip_zip64.c
     test_read_format_zip_zipx_encrypted.c
+    test_read_format_zip_zipx_lzma_oom.c
     test_read_format_zip_with_invalid_traditional_eocd.c
     test_read_large.c
     test_read_pax_empty_val_no_nl.c
@@ -310,11 +320,13 @@ IF(ENABLE_TEST)
     test_write_format_zip_compression_lzmaxz.c
     test_write_format_zip_compression_zstd.c
     test_write_format_zip_empty.c
+    test_write_format_zip_empty_pathname.c
     test_write_format_zip_empty_zip64.c
     test_write_format_zip_entry_size_unset.c
     test_write_format_zip_file.c
     test_write_format_zip_file_zip64.c
     test_write_format_zip_large.c
+    test_write_format_zip_long_pathname.c
     test_write_format_zip_stream.c
     test_write_format_zip_windows_path.c
     test_write_format_zip_zip64.c
@@ -336,7 +348,7 @@ IF(ENABLE_TEST)
   # Generate list.h by grepping DEFINE_TEST() lines out of the C sources.
   #
   GENERATE_LIST_H(${CMAKE_CURRENT_BINARY_DIR}/list.h
-    ${CMAKE_CURRENT_LIST_FILE} ${libarchive_test_SOURCES})
+    ${CMAKE_CURRENT_LIST_FILE} libarchive_test ${libarchive_test_SOURCES})
   SET_PROPERTY(DIRECTORY APPEND PROPERTY INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_BINARY_DIR})
 
@@ -353,7 +365,7 @@ IF(ENABLE_TEST)
     SET_TESTS_PROPERTIES(libarchive_${_testname} PROPERTIES SKIP_RETURN_CODE 2)
   ENDMACRO (DEFINE_TEST _testname)
 
-  INCLUDE(${CMAKE_CURRENT_BINARY_DIR}/list.h)
+  INCLUDE(${CMAKE_CURRENT_BINARY_DIR}/list.h OPTIONAL)
   INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
   INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/test_utils)
   INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/libarchive/test)
@@ -363,4 +375,3 @@ IF(ENABLE_TEST)
 	COMMAND	libarchive_test -r ${CMAKE_CURRENT_SOURCE_DIR} -vv)
   ADD_DEPENDENCIES(run_all_tests run_libarchive_test)
 ENDIF(ENABLE_TEST)
-
